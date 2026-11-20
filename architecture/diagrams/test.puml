@@ -1,4 +1,0 @@
-@startuml
-Player -> Simulator : loads grid
-Simulator --> Player : next generation
-@enduml
