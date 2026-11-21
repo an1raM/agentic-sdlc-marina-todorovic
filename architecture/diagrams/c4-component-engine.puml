@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Component>
+
+title Component diagram for Game Engine core library
+
+Container_Ext(cli, "CLI", "Python 3.12", "Command-line client that calls the engine and handles files and terminal output.")
+Container_Ext(backend, "Flask backend", "Python 3.12, Flask", "HTTP adapter that serves the Web UI and calls the engine.")
+
+Container_Boundary(engine, "Game Engine core library") {
+    Component(codec, "Grid Text Codec", "Python 3.12", "Parses headerless star/dot rows into a grid and formats a grid back to text; rejects invalid text.")
+    Component(model, "Grid Model", "Python 3.12", "Holds the fixed-size grid of living and dead cells in memory.")
+    Component(rules, "Rules Engine", "Python 3.12", "Computes the next generation with Conway's rules; neighbours outside the fixed grid are dead and edges do not wrap.")
+}
+
+Rel(cli, codec, "Passes grid text to")
+Rel(cli, rules, "Requests next generation from")
+Rel(backend, codec, "Passes grid text to")
+Rel(backend, rules, "Requests next generation from")
+Rel(codec, model, "Builds grid from text and formats grid to text using")
+Rel(rules, model, "Reads current cells and produces the next generation using")
+@enduml

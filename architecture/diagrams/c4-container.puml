@@ -1,0 +1,25 @@
+@startuml
+!include <C4/C4_Container>
+
+title Container diagram for Game of Life Simulator
+
+Person(player, "Player", "A person who explores how a starting grid evolves.")
+
+System_Boundary(simulator, "Game of Life Simulator") {
+    Container(cli, "CLI", "Python 3.12", "Command-line client that reads and writes grid files, calls the engine and prints grids and errors to the terminal.")
+    Container(webui, "Web UI", "HTML page served by Flask", "Browser page that holds the current grid text and lets the player load a named grid, advance generations and save the current grid.")
+    Container(backend, "Flask backend", "Python 3.12, Flask", "Small HTTP backend that serves the Web UI, calls the engine on grid text from the page and reads and writes named files in the grids/ folder on load and save only.")
+    Container(engine, "Game Engine core library", "Python 3.12", "Shared I/O-free library that parses and formats grid text and computes the next generation under Conway's rules.")
+}
+
+System_Ext(fs, "File System", "Stores starting grid files and saved generations as plain text in the grids/ folder.")
+
+Rel(player, cli, "Runs load, next and save commands using")
+Rel(player, webui, "Loads grids and watches generations using")
+Rel(webui, backend, "Sends file name on load, current grid text on next, and grid text plus file name on save", "HTTP")
+Rel(backend, webui, "Returns grid text or a rendered page with grids and errors", "HTTP")
+Rel(cli, engine, "Calls parsing, formatting and next-generation functions on")
+Rel(backend, engine, "Calls parsing, formatting and next-generation functions on")
+Rel(cli, fs, "Reads grid files from and writes generations to")
+Rel(backend, fs, "Reads named files from and writes named files to grids/ on load and save")
+@enduml

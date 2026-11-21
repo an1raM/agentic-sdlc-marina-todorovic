@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Component>
+
+title Component diagram for CLI
+
+Person(player, "Player", "A person who runs the simulator from a terminal.")
+
+Container_Boundary(cli, "CLI") {
+    Component(command, "Command Handler", "Python 3.12", "Interprets load, next and save commands from the terminal and coordinates the other CLI components.")
+    Component(files, "Grid File I/O", "Python 3.12", "Reads starting grid files and writes saved generations as plain text.")
+    Component(presenter, "Terminal Presenter", "Python 3.12", "Renders grids and clear error messages in the terminal.")
+}
+
+Container_Ext(engine, "Game Engine core library", "Python 3.12", "Shared I/O-free library providing grid parsing, formatting and next-generation computation.")
+System_Ext(fs, "File System", "Stores starting grid files and saved generations as plain text.")
+
+Rel(player, command, "Issues commands to")
+Rel(command, files, "Requests grid text from and saved text to")
+Rel(files, fs, "Reads from and writes to")
+Rel(command, engine, "Calls parsing, formatting and next-generation functions on")
+Rel(command, presenter, "Passes grids and errors to")
+Rel(presenter, player, "Shows grids and error messages to")
+@enduml
