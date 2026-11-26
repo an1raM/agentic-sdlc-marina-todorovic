@@ -1,0 +1,29 @@
+@startuml
+title Web UI Scenario: Load a Named Grid File from grids/
+
+actor Player
+participant "Web UI page" as WebUI
+participant "Flask HTTP Request Handler" as Handler
+participant "Flask Grid File I/O" as Files
+participant "File System (grids/ folder)" as FS
+participant "Flask Engine Adapter" as Adapter
+participant "Game Engine Text Codec" as Codec
+participant "Flask Page Renderer" as Renderer
+
+autonumber
+
+Player -> WebUI: enter file name and request load
+WebUI -> Handler: HTTP load request with file name
+Handler -> Files: read named grid file from grids/
+Files -> FS: read plain text file in grids/
+FS --> Files: grid text
+Files --> Handler: grid text
+Handler -> Adapter: validate grid text
+Adapter -> Codec: parse grid text
+Codec --> Adapter: in-memory grid or invalid-grid error
+Adapter --> Handler: validation result
+Handler -> Renderer: render page with grid or error
+Renderer --> WebUI: HTTP response with page
+WebUI -> WebUI: store returned grid text as current grid
+WebUI --> Player: shows grid or clear error message
+@enduml

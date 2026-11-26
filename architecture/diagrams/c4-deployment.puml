@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Deployment>
+
+title Deployment diagram for Game of Life Simulator
+
+Deployment_Node(playerMachine, "Player machine", "Web browser", "Runs the Web UI page, which holds the current grid text between requests.") {
+    Container(webui, "Web UI page", "HTML served by Flask", "Displays a grid, holds its current grid text, and sends load, next and save interactions to the Flask backend.")
+}
+
+Deployment_Node(host, "Simulator host", "Python 3.12 runtime; OS not specified", "Runs the CLI and the Flask backend and stores grid files in a grids/ folder on the local file system.") {
+    Container(cli, "CLI", "Python 3.12", "Command-line client run in a terminal; calls the engine and reads and writes grid files.")
+    Container(backend, "Flask backend", "Python 3.12, Flask", "Serves the Web UI, computes next generations from grid text sent by the page, and reads and writes named files in grids/ on load and save.")
+    Container(engineCli, "Game Engine core library (CLI instance)", "Python 3.12 library", "I/O-free rules and grid text codec loaded into the CLI process.")
+    Container(engineWeb, "Game Engine core library (Flask instance)", "Python 3.12 library", "I/O-free rules and grid text codec loaded into the Flask backend process.")
+    Container(gridfiles, "Grid text files in grids/", "Plain text files", "Starting grids and saved generations stored in the grids/ folder on the local file system.")
+}
+
+Rel(webui, backend, "Sends file name on load, grid text on next, grid text plus file name on save", "HTTP")
+Rel(cli, engineCli, "Calls in-process")
+Rel(backend, engineWeb, "Calls in-process")
+Rel(cli, gridfiles, "Reads and writes")
+Rel(backend, gridfiles, "Reads and writes named files on load and save only")
+@enduml

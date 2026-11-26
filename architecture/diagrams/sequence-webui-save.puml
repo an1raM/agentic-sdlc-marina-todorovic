@@ -1,0 +1,25 @@
+@startuml
+title Web UI Scenario: Save Current Grid Text to grids/
+
+actor Player
+participant "Web UI page (holds current grid text)" as WebUI
+participant "Flask HTTP Request Handler" as Handler
+participant "Game Engine Text Codec" as Codec
+participant "Flask Grid File I/O" as Files
+participant "File System (grids/ folder)" as FS
+participant "Flask Page Renderer" as Renderer
+
+autonumber
+
+Player -> WebUI: enter file name and request save
+WebUI -> Handler: HTTP save request with grid text and file name
+Handler -> Codec: validate supplied grid text
+Codec --> Handler: valid grid or invalid-grid error
+Handler -> Files: write supplied grid text to named file in grids/
+Files -> FS: write plain text file in grids/
+FS --> Files: write confirmed
+Files --> Handler: save result
+Handler -> Renderer: render confirmation or error
+Renderer --> WebUI: HTTP response with page
+WebUI --> Player: confirmation or clear error message
+@enduml

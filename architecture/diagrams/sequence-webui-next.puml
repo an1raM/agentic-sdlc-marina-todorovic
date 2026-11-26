@@ -1,0 +1,30 @@
+@startuml
+title Web UI Scenario: Advance the Current Grid Without File I/O
+
+actor Player
+participant "Web UI page (holds current grid text)" as WebUI
+participant "Flask HTTP Request Handler" as Handler
+participant "Flask Engine Adapter" as Adapter
+participant "Game Engine Text Codec" as Codec
+participant "Game Engine Rules Engine" as Rules
+
+autonumber
+
+Player -> WebUI: request next generation
+WebUI -> Handler: HTTP request with current grid text
+Handler -> Adapter: compute next generation from supplied grid text
+Adapter -> Codec: parse supplied grid text
+Codec --> Adapter: in-memory grid
+Adapter -> Rules: compute next generation
+Rules --> Adapter: next-generation grid
+Adapter -> Codec: format next-generation grid as text
+Codec --> Adapter: next-generation grid text
+Adapter --> Handler: next-generation grid text
+Handler --> WebUI: HTTP response with next-generation grid text
+WebUI -> WebUI: replace current grid text and display generation
+WebUI --> Player: shows generation
+
+note right of Handler
+No grid file is read or written in this scenario.
+end note
+@enduml

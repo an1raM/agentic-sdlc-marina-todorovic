@@ -1,0 +1,13 @@
+@startuml
+!include <C4/C4_Context>
+
+title System Context diagram for Game of Life Simulator
+
+Person(player, "Player", "A person who explores how a starting grid evolves.")
+System(simulator, "Game of Life Simulator", "Computes the next generation of a grid using Conway's rules and displays it on one page.")
+System_Ext(fs, "File System", "Stores starting grid files and saved generations.")
+
+Rel(player, simulator, "Loads grids and watches generations using")
+Rel(fs, simulator, "Reads grid file from")
+Rel(simulator, fs, "Writes next generation to")
+@enduml

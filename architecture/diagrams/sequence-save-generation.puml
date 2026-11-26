@@ -1,0 +1,26 @@
+@startuml
+title Save Scenario: Persist a Generation as a Text File
+
+actor Player
+participant "CLI Command Handler" as Command
+participant "CLI Grid File I/O" as Files
+participant "Game Engine Text Codec" as Codec
+participant "File System" as FS
+participant "CLI Terminal Presenter" as Presenter
+
+autonumber
+
+Player -> Command: request save
+Command -> Files: save current grid
+Files -> Codec: format grid as text
+Codec --> Files: grid text
+Files -> FS: write plain text file
+FS --> Files: write confirmed
+Files --> Command: save result
+Command -> Presenter: report result
+Presenter --> Player: confirmation or clear error message
+
+note right of FS
+The Web UI path differs: the page sends its grid text and a file name to Flask, which writes to grids/. See sequence-webui-save.
+end note
+@enduml

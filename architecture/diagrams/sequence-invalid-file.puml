@@ -1,0 +1,26 @@
+@startuml
+title Error Scenario: Invalid Grid File Is Rejected
+
+actor Player
+participant "CLI Command Handler" as Command
+participant "CLI Grid File I/O" as Files
+participant "Game Engine Text Codec" as Codec
+participant "File System" as FS
+participant "CLI Terminal Presenter" as Presenter
+
+autonumber
+
+Player -> Command: request grid load
+Command -> Files: read grid text
+Files -> FS: read plain text file
+FS --> Files: text that violates the grid format
+Files --> Command: grid text
+Command -> Codec: parse grid text
+Codec --> Command: error: invalid grid format
+Command -> Presenter: show clear error message
+Presenter --> Player: clear error message
+
+note right of Codec
+The Web UI reports the same error when loading a named file from grids/.
+end note
+@enduml

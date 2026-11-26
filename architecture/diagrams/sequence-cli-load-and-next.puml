@@ -1,0 +1,29 @@
+@startuml
+title CLI Scenario: Load a Grid and Show the Next Generation
+
+actor Player
+participant "CLI Command Handler" as Command
+participant "CLI Grid File I/O" as Files
+participant "Game Engine Text Codec" as Codec
+participant "Game Engine Rules Engine" as Rules
+participant "CLI Terminal Presenter" as Presenter
+participant "File System" as FS
+
+autonumber
+
+Player -> Command: request grid load
+Command -> Files: read grid text
+Files -> FS: read plain text file
+FS --> Files: grid text
+Files --> Command: grid text
+Command -> Codec: parse grid text
+Codec --> Command: in-memory grid
+Command -> Presenter: show grid
+Presenter --> Player: rendered grid
+
+Player -> Command: request next generation
+Command -> Rules: compute next generation
+Rules --> Command: next-generation grid
+Command -> Presenter: show next generation
+Presenter --> Player: rendered grid
+@enduml

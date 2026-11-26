@@ -1,0 +1,25 @@
+@startuml
+!include <C4/C4_Component>
+
+title Component diagram for Flask backend
+
+Container_Ext(webui, "Web UI", "HTML page served by Flask", "Browser page that holds the current grid text, sends a file name to load, grid text for next, and grid text plus a file name to save.")
+
+Container_Boundary(backend, "Flask backend") {
+    Component(handler, "HTTP Request Handler", "Python 3.12, Flask", "Accepts load (file name), next (current grid text) and save (grid text plus file name) requests from the Web UI and coordinates the response.")
+    Component(adapter, "Engine Adapter", "Python 3.12", "Calls the shared engine to validate loaded grid text and to compute and format the next generation from grid text supplied by the page; no file is read on the next path.")
+    Component(files, "Grid File I/O", "Python 3.12", "Reads named grid files from and writes saved generations to the grids/ folder for browser load and save requests only.")
+    Component(page, "Page Renderer", "Python 3.12, Flask", "Serves the Web UI page with the loaded grid or a clear error message, and with confirmation of a save.")
+}
+
+Container_Ext(engine, "Game Engine core library", "Python 3.12", "Shared I/O-free library providing grid parsing, formatting and next-generation computation.")
+System_Ext(fs, "File System", "Stores starting grid files and saved generations as plain text in the grids/ folder.")
+
+Rel(webui, handler, "Sends load, next and save requests to", "HTTP")
+Rel(handler, files, "Reads grids/ file on load and writes grids/ file on save using")
+Rel(files, fs, "Reads from and writes to grids/")
+Rel(handler, adapter, "Passes grid text from the page or from a loaded file to")
+Rel(adapter, engine, "Calls parsing, formatting and next-generation functions on")
+Rel(handler, page, "Passes grid, confirmation or error to")
+Rel(page, webui, "Returns rendered page to")
+@enduml
